@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const { StatusCodes } = require("http-status-codes");
+const bcrypt = require("bcrypt");
 
 exports.register = async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -15,12 +16,14 @@ exports.register = async (req, res, next) => {
   }
 
   try {
-    let newUser = { name, email, password };
+    const hashedPassword = bcrypt.hashSync(password, +process.env.SALT_ROUNDS);
+    let newUser = { name, email, password: hashedPassword };
     newUser = await User.create(newUser);
 
-    res
-      .status(StatusCodes.CREATED)
-      .json({ msg: "User created successfully", user: newUser });
+    res.status(StatusCodes.CREATED).json({
+      msg: "User created successfully",
+      user: newUser, // TODO: remove this as the user data should not be sent back
+    });
   } catch (error) {
     if (error.code === 11000) {
       // 11000: This is the error code associated with a duplicate key error in MongoDB.

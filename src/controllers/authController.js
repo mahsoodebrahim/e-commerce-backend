@@ -43,10 +43,16 @@ exports.login = async (req, res, next) => {
 
   const user = await User.findOne({ email: email });
 
-  if (user.password !== password) {
+  if (!user) {
     return res
       .status(StatusCodes.UNAUTHORIZED)
       .json({ msg: "Invalid email or password" });
+  }
+
+  const isSamePassword = bcrypt.compareSync(password, user.password);
+
+  if (!isSamePassword) {
+    return res.status(StatusCodes.UNAUTHORIZED).json({ msg: "password" });
   }
 
   const jwtData = { role: user.role, email };

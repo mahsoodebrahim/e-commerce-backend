@@ -1,8 +1,11 @@
 require("dotenv").config();
 const express = require("express");
+require("express-async-errors");
 const mongoose = require("mongoose");
 
-const authRoutes = require("./src/routes/authRoutes");
+const { errorHandler } = require("./src/middleware/error-handling-middleware");
+
+const authRoutes = require("./src/routes/auth-routes");
 
 const app = express();
 
@@ -13,8 +16,13 @@ app.use(express.json()); // for parsing application/json
 app.use("/auth", authRoutes);
 
 app.get("/", (req, res, next) => {
-  res.status(200).json({ msg: "Hello World" });
+  const error = new Error("THIS IS THE ERROR MESSAGE");
+  error.statusCode = 500;
+  next(error);
 });
+
+// Error handling middleware
+app.use(errorHandler);
 
 const port = process.env.PORT || 3000;
 

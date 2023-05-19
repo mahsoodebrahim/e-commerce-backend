@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 
-exports.errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, next) => {
   let message = err.message || "Something went wrong, please try again later";
   let statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
 
@@ -12,3 +12,5 @@ exports.errorHandler = (err, req, res, next) => {
 
   res.status(statusCode).json({ errorMsg: message });
 };
+
+module.exports = errorHandler;

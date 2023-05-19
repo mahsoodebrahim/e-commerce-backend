@@ -3,7 +3,8 @@ const express = require("express");
 require("express-async-errors");
 const mongoose = require("mongoose");
 
-const { errorHandler } = require("./src/middleware/error-handling-middleware");
+const errorHandler = require("./src/middleware/error-handling-middleware");
+const notFoundHandler = require("./src/middleware/not-found-middleware");
 
 const authRoutes = require("./src/routes/auth-routes");
 
@@ -20,6 +21,8 @@ app.get("/", (req, res, next) => {
   error.statusCode = 500;
   next(error);
 });
+
+app.use(notFoundHandler);
 
 // Error handling middleware
 app.use(errorHandler);

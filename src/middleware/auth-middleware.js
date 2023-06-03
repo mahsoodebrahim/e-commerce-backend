@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const Errors = require("../errors");
+const { superusers } = require("../data/constant");
 
 exports.isAuthenticated = (req, res, next) => {
   const authorizationHeader = req.get("Authorization");
@@ -25,4 +26,14 @@ exports.isAuthenticated = (req, res, next) => {
 
     throw new Errors.UnauthorizedError(errMessage);
   }
+};
+
+exports.isAuthorized = (req, res, next) => {
+  if (!superusers.hasOwnProperty(req.user.role)) {
+    throw new Errors.UnauthorizedError(
+      "User is not allowed to access this route"
+    );
+  }
+
+  next();
 };

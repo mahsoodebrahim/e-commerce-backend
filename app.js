@@ -7,6 +7,7 @@ const errorHandler = require("./src/middleware/error-handling-middleware");
 const notFoundHandler = require("./src/middleware/not-found-middleware");
 
 const authRoutes = require("./src/routes/auth-routes");
+const userRoutes = require("./src/routes/user-routes");
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.json()); // for parsing application/json
 
 // Routing
 app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
 
 app.get("/", (req, res, next) => {
   const error = new Error("THIS IS THE ERROR MESSAGE");

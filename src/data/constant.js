@@ -1,13 +1,13 @@
-const userRoles = Object.freeze({
-  user: "user",
-  admin: "admin",
+const UserRoleEnum = Object.freeze({
+  USER: "user",
+  ADMIN: "admin",
 });
 
-const superusers = Object.freeze({
-  admin: userRoles.admin,
+const SUPERUSERS = Object.freeze({
+  ADMIN: UserRoleEnum.admin,
 });
 
 module.exports = {
-  userRoles,
-  superusers,
+  UserRoleEnum,
+  SUPERUSERS,
 };

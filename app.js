@@ -13,6 +13,7 @@ const productRoutes = require("./src/routes/product-routes");
 const app = express();
 
 // Middleware
+app.use(express.static("src/uploads")); // Serving static files
 app.use(express.json()); // for parsing application/json
 
 // Routing

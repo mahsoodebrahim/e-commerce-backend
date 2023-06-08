@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const Errors = require("../errors");
-const { SUPERUSERS } = require("../data/constant");
+const { SUPERUSERS } = require("../data/constants");
 
 exports.isAuthenticated = (req, res, next) => {
   const authorizationHeader = req.get("Authorization");

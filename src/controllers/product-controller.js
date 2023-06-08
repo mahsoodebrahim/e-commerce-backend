@@ -1,3 +1,5 @@
+const path = require("path");
+
 const mongoose = require("mongoose");
 const { StatusCodes } = require("http-status-codes");
 
@@ -39,7 +41,10 @@ exports.createProduct = async (req, res, next) => {
 };
 
 exports.uploadImage = (req, res, next) => {
-  res.send("uploadImage");
+  res.status(StatusCodes.OK).json({
+    msg: "Successfully uploaded image",
+    imagePath: path.join("src", "uploads", req.file.filename),
+  });
 };
 
 exports.updateProduct = async (req, res, next) => {

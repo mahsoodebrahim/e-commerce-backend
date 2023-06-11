@@ -9,6 +9,7 @@ const notFoundHandler = require("./src/middleware/not-found-middleware");
 const authRoutes = require("./src/routes/auth-routes");
 const userRoutes = require("./src/routes/user-routes");
 const productRoutes = require("./src/routes/product-routes");
+const reviewRoutes = require("./src/routes/review-routes");
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(express.json()); // for parsing application/json
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/products", productRoutes);
+app.use("/reviews", reviewRoutes);
 
 app.get("/", (req, res, next) => {
   const error = new Error("THIS IS THE ERROR MESSAGE");

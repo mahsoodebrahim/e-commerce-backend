@@ -12,8 +12,24 @@ exports.getAllProducts = async (req, res, next) => {
   res.status(StatusCodes.OK).json({ products });
 };
 
-exports.getSingleProductReviews = (req, res, next) => {
-  res.send("getSingleProductReviews");
+exports.getAllReviewsForProduct = async (req, res, next) => {
+  const { productId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    throw new Errors.BadRequestError(`Invalid product id: ${productId}`);
+  }
+
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    throw new Errors.BadRequestError(`No product exists with id: ${productId}`);
+  }
+
+  const productWithReviews = await product.populate("reviews");
+
+  res.status(StatusCodes.OK).json({
+    product: productWithReviews,
+  });
 };
 
 exports.getSingleProduct = async (req, res, next) => {

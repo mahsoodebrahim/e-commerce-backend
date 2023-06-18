@@ -9,7 +9,7 @@ const {
 } = require("../middleware/auth-middleware");
 
 router.get("/", productController.getAllProducts);
-router.get("/:productId/reviews", productController.getSingleProductReviews);
+router.get("/:productId/reviews", productController.getAllReviewsForProduct);
 router.get("/:productId", productController.getSingleProduct);
 
 router.post(

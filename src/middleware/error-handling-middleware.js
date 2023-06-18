@@ -10,6 +10,8 @@ const errorHandler = (err, req, res, next) => {
     statusCode = StatusCodes.CONFLICT;
   }
 
+  if (process.env.NODE_ENV === "development") console.error(err);
+
   res.status(statusCode).json({ errorMsg: message });
 };
 

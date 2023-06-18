@@ -32,4 +32,24 @@ const reviewSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+reviewSchema.methods.incrementProductReviewCount = async function () {
+  const Product = mongoose.model("Product");
+  const product = await Product.findById(this.product);
+
+  product.numOfReviews += 1;
+
+  await product.save();
+};
+
+reviewSchema.methods.decrementProductReviewCount = async function () {
+  const Product = mongoose.model("Product");
+  const product = await Product.findById(this.product);
+
+  if (product.numOfReviews > 0) {
+    product.numOfReviews -= 1;
+  }
+
+  await product.save();
+};
+
 module.exports = mongoose.model("Review", reviewSchema);

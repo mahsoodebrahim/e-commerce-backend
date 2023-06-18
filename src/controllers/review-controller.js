@@ -32,6 +32,8 @@ exports.getSingleReview = async (req, res, next) => {
 exports.createReview = async (req, res, next) => {
   const review = await Review.create(req.body);
 
+  await review.incrementProductReviewCount();
+
   res.status(StatusCodes.CREATED).json({ review });
 };
 
@@ -77,6 +79,8 @@ exports.deleteReview = async (req, res, next) => {
   }
 
   await Review.findByIdAndDelete(reviewId);
+
+  await review.decrementProductReviewCount();
 
   res
     .status(StatusCodes.OK)

@@ -2,18 +2,15 @@ const express = require("express");
 const router = express.Router();
 
 const reviewController = require("../controllers/review-controller");
-// const {
-//   isAuthenticated,
-//   isAuthorized,
-// } = require("../middleware/auth-middleware");
+const { isAuthenticated } = require("../middleware/auth-middleware");
 
 router.get("/", reviewController.getAllReviews);
 router.get("/:reviewId", reviewController.getSingleReview);
 
-router.post("/", reviewController.createReview);
+router.post("/", isAuthenticated, reviewController.createReview);
 
-router.patch("/:productId", reviewController.updateReview);
+router.patch("/:reviewId", isAuthenticated, reviewController.updateReview);
 
-router.delete("/:productId", reviewController.deleteReview);
+router.delete("/:reviewId", isAuthenticated, reviewController.deleteReview);
 
 module.exports = router;

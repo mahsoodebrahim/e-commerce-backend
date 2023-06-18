@@ -1,10 +1,10 @@
 const UserRoleEnum = Object.freeze({
-  USER: "user",
-  ADMIN: "admin",
+  user: "user",
+  admin: "admin",
 });
 
 const SUPERUSERS = Object.freeze({
-  ADMIN: UserRoleEnum.admin,
+  admin: UserRoleEnum.admin,
 });
 
 module.exports = {

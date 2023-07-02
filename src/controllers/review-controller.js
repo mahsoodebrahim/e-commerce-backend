@@ -33,6 +33,7 @@ exports.createReview = async (req, res, next) => {
   const review = await Review.create(req.body);
 
   await review.incrementProductReviewCount();
+  await review.updateProductAverageRating();
 
   res.status(StatusCodes.CREATED).json({ review });
 };
@@ -58,6 +59,8 @@ exports.updateReview = async (req, res, next) => {
     { runValidators: true, new: true }
   );
 
+  await updatedReview.updateProductAverageRating();
+
   res.status(StatusCodes.OK).json({ review: updatedReview });
 };
 
@@ -79,8 +82,8 @@ exports.deleteReview = async (req, res, next) => {
   }
 
   await Review.findByIdAndDelete(reviewId);
-
   await review.decrementProductReviewCount();
+  await review.updateProductAverageRating();
 
   res
     .status(StatusCodes.OK)

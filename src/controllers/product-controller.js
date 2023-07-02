@@ -27,8 +27,11 @@ exports.getAllReviewsForProduct = async (req, res, next) => {
 
   const productWithReviews = await product.populate("reviews");
 
+  const reviews = productWithReviews.reviews;
+
   res.status(StatusCodes.OK).json({
-    product: productWithReviews,
+    count: reviews.length,
+    reviews: reviews,
   });
 };
 

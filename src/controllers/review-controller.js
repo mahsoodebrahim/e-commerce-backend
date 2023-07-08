@@ -30,6 +30,17 @@ exports.getSingleReview = async (req, res, next) => {
 };
 
 exports.createReview = async (req, res, next) => {
+  const existingReview = await Review.findOne({
+    product: req.body.product,
+    user: req.user.id,
+  });
+
+  if (!!existingReview) {
+    throw new Errors.BadRequestError(
+      "User has already been created for this product"
+    );
+  }
+
   const review = await Review.create(req.body);
 
   await review.incrementProductReviewCount();

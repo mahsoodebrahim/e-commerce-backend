@@ -9,7 +9,7 @@ const Errors = require("../errors");
 exports.getAllProducts = async (req, res, next) => {
   const products = await Product.find({});
 
-  res.status(StatusCodes.OK).json({ products });
+  res.status(StatusCodes.OK).json({ count: products.length, products });
 };
 
 exports.getAllReviewsForProduct = async (req, res, next) => {

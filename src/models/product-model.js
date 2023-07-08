@@ -81,6 +81,11 @@ const productSchema = new mongoose.Schema(
   }
 );
 
+productSchema.methods.deleteProductReviews = async function () {
+  const ReviewModel = mongoose.model("Review");
+  await ReviewModel.deleteMany({ product: this._id });
+};
+
 productSchema.virtual("reviews", {
   ref: "Review",
   localField: "_id",

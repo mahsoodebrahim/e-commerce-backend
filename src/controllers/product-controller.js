@@ -90,7 +90,16 @@ exports.deleteProduct = async (req, res, next) => {
     throw new Errors.BadRequestError(`Invalid product Id: ${productId}`);
   }
 
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    throw new Errors.BadRequestError(
+      `Product does not exist with id: ${productId}`
+    );
+  }
+
   await Product.findByIdAndDelete(productId);
+  await product.deleteProductReviews();
 
   res
     .status(StatusCodes.OK)

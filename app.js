@@ -10,6 +10,7 @@ const authRoutes = require("./src/routes/auth-routes");
 const userRoutes = require("./src/routes/user-routes");
 const productRoutes = require("./src/routes/product-routes");
 const reviewRoutes = require("./src/routes/review-routes");
+const cartRoutes = require("./src/routes/cart-routes");
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/products", productRoutes);
 app.use("/reviews", reviewRoutes);
+app.use("/cart", cartRoutes);
 
 app.get("/", (req, res, next) => {
   const error = new Error("THIS IS THE ERROR MESSAGE");

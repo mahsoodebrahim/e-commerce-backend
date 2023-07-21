@@ -9,7 +9,8 @@ const {
 
 router.use(isAuthenticated);
 
-router.get("/:cartId", cartController.getCart);
+router.get("/", cartController.getCart);
+router.get("/:cartId", cartController.getCartWithId);
 
 router.post("/", cartController.createCart);
 router.post("/products/:productId", cartController.addProductToCart);

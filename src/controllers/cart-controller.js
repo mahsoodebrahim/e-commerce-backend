@@ -15,7 +15,23 @@ const isAuthorizedForCartOperations = (user, cartUserId) => {
   return false;
 };
 
-const getCart = async (req) => {
+const getCart = async (user) => {
+  const cart = await Cart.findOne({ user: user.id });
+
+  if (!cart) {
+    throw new Errors.BadRequestError(`No cart associated with user`);
+  }
+
+  return cart;
+};
+
+exports.getCart = async (req, res, next) => {
+  const cart = await getCart(req.user);
+
+  res.status(StatusCodes.OK).json({ cart });
+};
+
+exports.getCartWithId = async (req, res, next) => {
   const { cartId } = req.params;
 
   // Check for valid cart ID
@@ -30,16 +46,10 @@ const getCart = async (req) => {
   }
 
   if (!isAuthorizedForCartOperations(req.user, cart.user)) {
-    throw new Errors.BadRequestError(
+    throw new Errors.UnauthorizedError(
       `Unauthorized to perform operations on this cart`
     );
   }
-
-  return cart;
-};
-
-exports.getCart = async (req, res, next) => {
-  const cart = await getCart(req);
 
   res.status(StatusCodes.OK).json({ cart });
 };

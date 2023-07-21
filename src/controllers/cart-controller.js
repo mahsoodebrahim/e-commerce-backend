@@ -6,6 +6,7 @@ const User = require("../models/user-model");
 const Product = require("../models/product-model");
 const Errors = require("../errors");
 const authUtils = require("../utils/auth-utils");
+const cartUtils = require("../utils/cart-utils");
 
 const isAuthorizedForCartOperations = (user, cartUserId) => {
   if (authUtils.isSuperuser(user.role) || cartUserId.equals(user.id)) {
@@ -69,30 +70,120 @@ exports.createCart = async (req, res, next) => {
 };
 
 exports.addProductToCart = async (req, res, next) => {
-  // const { productId } = req.params;
+  const { productId } = req.params;
 
-  // if (!mongoose.Types.ObjectId.isValid(productId)) {
-  //   throw new Errors.BadRequestError("Invalid product id provided");
-  // }
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    throw new Errors.BadRequestError("Invalid product id provided");
+  }
 
-  // const validProduct = await Product.findById(productId);
-  // if (!validProduct) {
-  //   throw new Errors.BadRequestError("Invalid product id provided");
-  // }
+  const validProduct = await Product.findById(productId);
+  if (!validProduct) {
+    throw new Errors.BadRequestError("Invalid product id provided");
+  }
 
-  // getCart();
+  // Get cart
+  const cart = await getCart(req.user);
 
-  res.send("addProductToCart");
+  // Check if product is already present in cart
+  if (cartUtils.doesCartContainProduct(cart, productId)) {
+    throw new Errors.BadRequestError("Product already in cart");
+  }
+
+  // Create a new cart item
+  const cartItem = {
+    product: productId,
+    quantity: req.body.quantity || 1,
+  };
+
+  // Add the cart item to the cart
+  cart.products.push(cartItem);
+
+  try {
+    await cart.save();
+    res.status(StatusCodes.OK).json({ cart });
+  } catch (err) {
+    throw new Error(err);
+  }
 };
 
 exports.updateProductQuantity = async (req, res, next) => {
-  res.send("updateProductQuantity");
+  const newProductQuantity = req.body.quantity;
+  const { productId } = req.params;
+
+  cartUtils.checkForValidQuantity(newProductQuantity);
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    throw new Errors.BadRequestError("Invalid product id provided");
+  }
+
+  const validProduct = await Product.findById(productId);
+  if (!validProduct) {
+    throw new Errors.BadRequestError("Invalid product id provided");
+  }
+
+  // Get cart
+  const cart = await getCart(req.user);
+
+  // Check if product is not in cart
+  if (!cartUtils.doesCartContainProduct(cart, productId)) {
+    throw new Errors.BadRequestError("Product not present in cart");
+  }
+
+  // Update quantity
+  cartUtils.updateProductQuantity(cart, productId, newProductQuantity);
+
+  try {
+    await cart.save();
+    res.status(StatusCodes.OK).json({ cart });
+  } catch (err) {
+    throw new Error(err);
+  }
 };
 
 exports.removeProductFromCart = async (req, res, next) => {
-  res.send("removeProductFromCart");
+  const { productId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    throw new Errors.BadRequestError("Invalid product id provided");
+  }
+
+  const validProduct = await Product.findById(productId);
+  if (!validProduct) {
+    throw new Errors.BadRequestError("Invalid product id provided");
+  }
+
+  // Get cart
+  const cart = await getCart(req.user);
+
+  // Check if product is not in cart
+  if (!cartUtils.doesCartContainProduct(cart, productId)) {
+    throw new Errors.BadRequestError("Product not present in cart");
+  }
+
+  // Remove product from cart
+  cart.products = cart.products.filter(
+    (cartItem) => !cartItem.product.equals(productId)
+  );
+
+  try {
+    await cart.save();
+    res.status(StatusCodes.OK).json({ cart });
+  } catch (err) {
+    throw new Error(err);
+  }
 };
 
 exports.clearCart = async (req, res, next) => {
-  res.send("clearCart");
+  // Get cart
+  const cart = await getCart(req.user);
+
+  // Remove all elements from cart
+  cart.products = [];
+
+  try {
+    await cart.save();
+    res.status(StatusCodes.OK).json({ cart });
+  } catch (err) {
+    throw new Error(err);
+  }
 };

@@ -11,6 +11,11 @@ const orderSchema = new mongoose.Schema(
       enum: ["pending", "paid", "failed"],
       default: "pending",
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // Referencing the User model
+      required: true,
+    },
   },
   { timestamps: true }
 );

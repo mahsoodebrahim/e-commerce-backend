@@ -1,5 +1,6 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { StatusCodes } = require("http-status-codes");
+const mongoose = require("mongoose");
 
 const Order = require("../models/order-model");
 const Cart = require("../models/cart-model");
@@ -7,15 +8,31 @@ const Errors = require("../errors");
 const orderUtils = require("../utils/order-utils");
 
 exports.getAllOrders = async (req, res, next) => {
-  res.send("getAllOrders");
+  const orders = await Order.find({});
+
+  res.status(StatusCodes.OK).json({ count: orders.length, orders });
 };
 
 exports.getCurrentUserOrders = async (req, res, next) => {
-  res.send("getCurrentUserOrders");
+  const orders = await Order.find({ user: req.user.id });
+
+  res.status(StatusCodes.OK).json({ count: orders.length, orders });
 };
 
 exports.getSingleOrder = async (req, res, next) => {
-  res.send("getSingleOrder");
+  const orderId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(orderId)) {
+    throw new Errors.BadRequestError(`Invalid order id: ${orderId}`);
+  }
+
+  const order = await Order.findById(orderId);
+
+  if (!order) {
+    throw new Errors.NotFoundError(`Order with ID (${orderId}) does not exist`);
+  }
+
+  res.status(StatusCodes.OK).json({ order });
 };
 
 exports.createOrder = async (req, res, next) => {
@@ -71,6 +88,8 @@ exports.createOrder = async (req, res, next) => {
   }
 };
 
+// TODO: Use Stripe webhooks to update status of order once user has paid
+// This is also accessible manually for Admin users
 exports.updateOrder = async (req, res, next) => {
   res.send("updateOrder");
 };

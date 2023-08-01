@@ -9,7 +9,7 @@ const {
 
 router.use(isAuthenticated);
 
-router.get("/", orderController.getAllOrders); // TODO: Add isAuthorized() to this route
+router.get("/", isAuthorized, orderController.getAllOrders);
 router.get("/currentUserOrders", orderController.getCurrentUserOrders);
 router.get("/:id", orderController.getSingleOrder);
 

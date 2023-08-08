@@ -2,8 +2,12 @@ const User = require("../models/user-model");
 const jwt = require("jsonwebtoken");
 const { StatusCodes } = require("http-status-codes");
 const bcrypt = require("bcrypt");
+const randomstring = require("randomstring");
+const UrlSafeString = require("url-safe-string"),
+  tagGenerator = new UrlSafeString();
 
 const Errors = require("../errors");
+const authUtils = require("../utils/auth-utils");
 
 exports.register = async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -14,11 +18,32 @@ exports.register = async (req, res, next) => {
     );
   }
 
+  const emailConfirmationToken = tagGenerator.generate(
+    randomstring.generate(10)
+  ); // Generate a random URL-safe string of length 10
+  const hashedEmailConfirmationToken = bcrypt.hashSync(
+    emailConfirmationToken,
+    +process.env.SALT_ROUNDS
+  ); // Hash the random string using bcrypt
   const hashedPassword = bcrypt.hashSync(password, +process.env.SALT_ROUNDS);
 
-  const newUser = { name, email, password: hashedPassword };
+  const newUser = {
+    name,
+    email,
+    password: hashedPassword,
+    emailConfirmationToken: hashedEmailConfirmationToken,
+  };
 
   const createdUser = await User.create(newUser);
+
+  const encodedHashedEmailConfirmationToken = encodeURIComponent(
+    hashedEmailConfirmationToken
+  ); // Encode the hashed string to make it safe for URL usage
+
+  await authUtils.sendConfirmationEmail(
+    email,
+    encodedHashedEmailConfirmationToken
+  );
 
   res.status(StatusCodes.CREATED).json({
     msg: "User created successfully",
@@ -61,4 +86,36 @@ exports.login = async (req, res, next) => {
 
 exports.logout = (req, res, next) => {
   res.send("logout");
+};
+
+exports.verify = async (req, res, next) => {
+  const hashedConfirmationToken = req.query.id;
+
+  if (!hashedConfirmationToken) {
+    throw new Errors.BadRequestError("Query parameter (id) not provided");
+  }
+
+  // Decode the hashed query parameter
+  const decodedHashedConfirmationToken = decodeURIComponent(
+    hashedConfirmationToken
+  );
+
+  const userWithThisConfirmationToken = await User.findOne({
+    emailConfirmationToken: decodedHashedConfirmationToken,
+  });
+
+  if (!userWithThisConfirmationToken) {
+    throw new Errors.BadRequestError("Invalid query parameter (id) provided");
+  }
+
+  // At this point the user is registered, the 'emailConfirmationToken' property is
+  // removed as it is no longer needed and the 'active' property is set to true
+  userWithThisConfirmationToken.emailConfirmationToken = undefined;
+  userWithThisConfirmationToken.active = true;
+
+  await userWithThisConfirmationToken.save();
+
+  res.json({
+    message: "User successfully registered!",
+  });
 };

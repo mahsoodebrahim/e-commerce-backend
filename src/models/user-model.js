@@ -15,6 +15,13 @@ const userSchema = new mongoose.Schema({
     required: true,
     minLength: 4,
   },
+  active: {
+    type: Boolean,
+    default: false,
+  },
+  emailConfirmationToken: {
+    type: String,
+  },
   role: {
     type: String,
     enum: ["admin", "user"],

@@ -9,6 +9,7 @@ This repository contains the backend application for an e-commerce furniture sto
 - [Getting Started](#getting-started)
 - [Configuration](#configuration)
 - [API Documentation](#api-documentation)
+- [Technologies Used](#technologies-used)
 
 ## Key Features
 
@@ -75,3 +76,12 @@ You can configure the application using the .env file. Here are the important va
 ## API Documentation
 
 For detailed information about the available routes and their usage, refer to the [API documentation](https://documenter.getpostman.com/view/20359081/2s9Xy5KpzT).
+
+## Technologies Used
+
+- Backend: Node.js with Express.js
+- Database: MongoDB with Mongoose.js
+- Authentication: JSON Web Tokens (JWT)
+- Payment Integration: Stripe
+- Testing: Jest
+- Email Sending: Nodemailer with Mailtrap

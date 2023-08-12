@@ -33,6 +33,6 @@ exports.sendConfirmationEmail = async (email, queryString) => {
     const info = await transporter.sendMail(mailOptions);
     console.log("Email sent successfully:", info.response);
   } catch (error) {
-    console.log("Error sending email:", error);
+    throw new Error(`Error sending email: ${error}`);
   }
 };

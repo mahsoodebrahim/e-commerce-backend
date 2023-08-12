@@ -4,7 +4,7 @@ exports.createLineItems = (products) => {
     return {
       price_data: {
         currency: "usd", // Replace with the appropriate currency code
-        unit_amount: parseInt(price) * 100, // Stripe expects the amount in cents
+        unit_amount: parseFloat(price) * 100, // Stripe expects the amount in cents
         product_data: {
           name: name, // Replace with the name of your product
           description: description, // Replace with the description of your product

@@ -12,18 +12,18 @@ exports.doesCartContainProduct = (cart, productId) => {
 
 exports.checkForValidQuantity = (quantity) => {
   // Check if the 'quantity' property exists
-  if (typeof quantity !== "undefined") {
-    // Check if 'quantity' is a number or can be converted to a number
-    if (!isNaN(quantity)) {
-      // At this point, 'quantity' is a valid number, including zero
-      return;
-    } else {
-      // 'quantity' is not a valid number
-      throw new Errors.BadRequestError("Quantity is not a valid number");
-    }
-  } else {
+  if (quantity === null || typeof quantity === "undefined") {
     // 'quantity' is not present in the request body
     throw new Errors.BadRequestError("Quantity not provided in request body");
+  }
+
+  // Check if 'quantity' is a number or can be converted to a number
+  if (!isNaN(quantity)) {
+    // At this point, 'quantity' is a valid number, including zero
+    return;
+  } else {
+    // 'quantity' is not a valid number
+    throw new Errors.BadRequestError("Quantity is not a valid number");
   }
 };
 

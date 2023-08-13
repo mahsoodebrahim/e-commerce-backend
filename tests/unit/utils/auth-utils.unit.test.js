@@ -1,6 +1,5 @@
 const authUtils = require("../../../src/utils/auth-utils");
 const nodemailer = require("nodemailer");
-console.log("THE NODE ENVIRONMENT", process.env.NODE_ENV);
 jest.mock("nodemailer");
 
 describe("isSuperuser()", () => {

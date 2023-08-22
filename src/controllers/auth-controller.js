@@ -1,4 +1,3 @@
-const User = require("../models/user-model");
 const jwt = require("jsonwebtoken");
 const { StatusCodes } = require("http-status-codes");
 const bcrypt = require("bcrypt");
@@ -6,6 +5,8 @@ const randomstring = require("randomstring");
 const UrlSafeString = require("url-safe-string"),
   tagGenerator = new UrlSafeString();
 
+const User = require("../models/user-model");
+const TokenDenylist = require("../models/token-denylist-model");
 const Errors = require("../errors");
 const authUtils = require("../utils/auth-utils");
 
@@ -84,8 +85,13 @@ exports.login = async (req, res, next) => {
     .json({ msg: "Successfully logged in", token: token });
 };
 
-exports.logout = (req, res, next) => {
-  res.send("logout");
+exports.logout = async (req, res, next) => {
+  const token = req.get("Authorization").slice(7);
+
+  // Add the token to the blacklist
+  await TokenDenylist.create({ token: token });
+
+  res.status(StatusCodes.OK).json({ message: "Logged out successfully" });
 };
 
 exports.verify = async (req, res, next) => {

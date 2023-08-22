@@ -1,9 +1,10 @@
 const jwt = require("jsonwebtoken");
 
+const TokenDenylist = require("../models/token-denylist-model");
 const Errors = require("../errors");
 const authUtils = require("../utils/auth-utils");
 
-exports.isAuthenticated = (req, res, next) => {
+exports.isAuthenticated = async (req, res, next) => {
   const authorizationHeader = req.get("Authorization");
 
   // Handle missing or invalid authorization header
@@ -12,6 +13,12 @@ exports.isAuthenticated = (req, res, next) => {
   }
 
   const token = authorizationHeader.slice(7); // Extract token without the "Bearer " prefix
+
+  const denylistedToken = await TokenDenylist.findOne({ token: token });
+
+  if (denylistedToken) {
+    throw new Errors.UnauthorizedError("Token is no longer valid");
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);

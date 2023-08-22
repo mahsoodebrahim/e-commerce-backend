@@ -27,6 +27,21 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage, fileFilter: fileFilter });
+const upload = multer({ storage: storage, fileFilter: fileFilter }).single(
+  "image"
+);
 
-module.exports = upload.single("image");
+module.exports = (req, res, next) => {
+  upload(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      // A Multer error occurred when uploading.
+      console.log(err);
+    } else if (err) {
+      // An unknown error occurred when uploading.
+      console.log(err);
+    }
+
+    // Everything went fine.
+    next();
+  });
+};

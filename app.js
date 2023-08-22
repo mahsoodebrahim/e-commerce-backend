@@ -27,20 +27,10 @@ app.use("/reviews", reviewRoutes);
 app.use("/cart", cartRoutes);
 app.use("/orders", orderRoutes);
 
-app.get("/", (req, res, next) => {
-  const error = new Error("THIS IS THE ERROR MESSAGE");
-  error.statusCode = 500;
-  next(error);
-});
-
+// Not Found middleware
 app.use(notFoundHandler);
 
 // Error handling middleware
 app.use(errorHandler);
 
-const port = process.env.PORT || 3000;
-
-app.listen(3000, async () => {
-  await mongoose.connect(process.env.MONGO_DB_CONNECTION_STRING);
-  console.log(`Listening on port ${port}`);
-});
+module.exports = app;
